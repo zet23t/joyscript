@@ -1,0 +1,17 @@
+{
+    "name": "JoyScriptTests",
+    "references": [
+        "GUID:cd3adf98f72d062488f6a32a2e8d9059"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

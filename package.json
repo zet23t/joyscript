@@ -1,0 +1,17 @@
+{
+    "name": "com.cube3d.joyscript",
+    "version": "0.0.1",
+    "displayName": "JoyScript",
+    "description": "A runtime scripting language",
+    "unity": "2019.1",
+    "unityRelease": "0b5",
+    "keywords": [
+        "scripting",
+        "JoyScript"
+    ],
+    "author": {
+        "name": "Eike Decker",
+        "email": "zet23t@googlemail.com",
+        "url": "https://www.cube3d.com"
+    }
+}
