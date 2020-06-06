@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -111,6 +112,90 @@ namespace JoyScript
             return value;
         }
 
+        public int Call(VM vm, string methodName, int argCount)
+        {
+            if (DataType != DataType.Object)
+            {
+                throw new ExecutionError("don't know how to handle method call on " + ToString() + " with method " + methodName);
+            }
+
+            var methods = vObject.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var method in methods)
+            {
+                if (method.Name != methodName || method.ContainsGenericParameters)
+                {
+                    continue;
+                }
+                ParameterInfo[] parameterInfo = method.GetParameters();
+                if (parameterInfo.Length != argCount)
+                {
+                    continue;
+                }
+                object[] args = new object[parameterInfo.Length];
+                for (int i = parameterInfo.Length - 1; i >= 0; i -= 1)
+                {
+                    Value v = vm.Pop();
+                    Type parameterType = parameterInfo[i].ParameterType;
+                    if (parameterType == typeof(bool))
+                    {
+                        args[i] = (bool) v;
+                        continue;
+                    }
+                    if (parameterType == typeof(int) || parameterType == typeof(long))
+                    {
+                        args[i] = (int) v;
+                        continue;
+                    }
+                    if (parameterType == typeof(float) || parameterType == typeof(double))
+                    {
+                        args[i] = (float) v;
+                        continue;
+                    }
+                    if (parameterType == typeof(string))
+                    {
+                        if (v.DataType == DataType.Nil)
+                        {
+                            args[i] = null;
+                        }
+                        args[i] = v.ToString();
+                        continue;
+                    }
+                    throw new ExecutionError("Unsupported method argument type #"+i+": "+parameterType);
+                }
+                var result = method.Invoke(vObject, args);
+                var resultParameter = method.ReturnParameter.ParameterType;
+                if (resultParameter == typeof(void))
+                {
+                    return 0;
+                }
+                if (resultParameter == typeof(bool))
+                {
+                    vm.GetCurrentFrame().Push((bool) result);
+                    return 1;
+                }
+                if (resultParameter == typeof(int) || resultParameter == typeof(long))
+                {
+                    vm.GetCurrentFrame().Push((int) result);
+                    return 1;
+                }
+                if (resultParameter == typeof(float) || resultParameter == typeof(double))
+                {
+                    vm.GetCurrentFrame().Push((float) result);
+                    return 1;
+                }
+
+                if (resultParameter == typeof(string))
+                {
+                    vm.GetCurrentFrame().Push((string) result);
+                    return 1;
+                }
+
+                vm.GetCurrentFrame().Push(new Value(DataType.Object, result));
+                return 1;
+            }
+            throw new ExecutionError("Can't call method "+methodName+" with "+argCount+" arguments on "+vObject);
+        }
+
         public int Call(VM vm, int argCount)
         {
             switch (DataType)
@@ -148,8 +233,35 @@ namespace JoyScript
             }
         }
 
+        public static explicit operator float(Value v)
+        {
+            switch (v.DataType)
+            {
+                case DataType.Int:
+                    return (float) v.vInt;
+                case DataType.Float:
+                    return v.vFloat;
+                default:
+                    throw new ExecutionError("Can't case " + v.DataType + " to float");
+            }
+        }
+
+        public static explicit operator int(Value v)
+        {
+            switch (v.DataType)
+            {
+                case DataType.Int:
+                    return v.vInt;
+                case DataType.Float:
+                    return (int) v.vFloat;
+                default:
+                    throw new ExecutionError("Can't case " + v.DataType + " to int");
+            }
+        }
+
         public static implicit operator Value(string str) => new Value(str);
         public static implicit operator Value(bool b) => new Value(b);
+        public static implicit operator Value(float f) => new Value(f);
         public static implicit operator Value(int i) => new Value(i);
         public static implicit operator Value(OpCode op) => new Value(op);
         public static implicit operator bool(Value a)

@@ -29,6 +29,7 @@ namespace JoyScript
         Jump,
         JumpIf,
         Call,
+        CallMethod,
         Return,
 
         // math
@@ -47,6 +48,5 @@ namespace JoyScript
         LowerEqualThan,
         GreaterThan,
         GreaterEqualThan,
-
     }
 }

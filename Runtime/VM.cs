@@ -65,7 +65,7 @@ namespace JoyScript
             return executionStack.GetCurrentFrame();
         }
 
-        public Value Pop(int fromBack = 0)
+        public Value Pop(int fromBack = 1)
         {
             return executionStack.PopValue(fromBack);
         }
@@ -195,6 +195,14 @@ namespace JoyScript
                             Value a = executionStack.PopValue();
                             Value b = executionStack.PopValue();
                             executionStack.PushValue(a >= b);
+                        }
+                        break;
+                    case OpCode.CallMethod:
+                        {
+                            int argCount = executionStack.PopValue().vInt;
+                            Value obj = executionStack.PopValue();
+                            string method = executionStack.PopValue().vString;
+                            obj.Call(this, method, argCount);
                         }
                         break;
                     case OpCode.Call:

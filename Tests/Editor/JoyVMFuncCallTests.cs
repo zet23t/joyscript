@@ -77,7 +77,44 @@ namespace JoyScript
                     OpCode.PushValueLiteral, 0,
                     OpCode.Call,
             });
-            Assert.AreEqual(called, called);
+            Assert.AreEqual(true, called);
+        }
+
+        private class TestClass
+        {
+            public bool Called;
+            public void Call()
+            {
+                Called = true;
+            }
+            public bool TestTrue() => true;
+        }
+        [Test]
+        public static void ObjectMethodCallTest()
+        {
+            var tc = new TestClass();
+            VM vm = CreateAndExecuteVM(new List<Value>()
+            {
+                    OpCode.PushValueLiteral, "Call",
+                    OpCode.PushValueLiteral, new Value(tc),
+                    OpCode.PushValueLiteral, 0,
+                    OpCode.CallMethod,
+            });
+            Assert.AreEqual(0, vm.GetCurrentFrame().Count);
+            Assert.AreEqual(true, tc.Called);
+        }
+        [Test]
+        public static void ObjectMethodCallReturnTrueTest()
+        {
+            var tc = new TestClass();
+            VM vm = CreateAndExecuteVM(new List<Value>()
+            {
+                    OpCode.PushValueLiteral, "TestTrue",
+                    OpCode.PushValueLiteral, new Value(tc),
+                    OpCode.PushValueLiteral, 0,
+                    OpCode.CallMethod,
+            });
+            Assert.AreEqual(Value.True, vm.Pop());
         }
 
         [Test]
