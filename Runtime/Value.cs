@@ -77,7 +77,8 @@ namespace JoyScript
             vObject = obj;
         }
 
-        public static Value NativeFunction(Action<string> action) => new Value(DataType.NativeFunction, action);
+        public static Value NativeFunction(Action action) => new Value(DataType.NativeFunction, action);
+        public static Value NativeFunction<T>(Action<T> action) => new Value(DataType.NativeFunction, action);
         public static Value AddressRef(string str, int address = 0) => new Value(DataType.AddressRef, str, address);
         public static Value Address(string str) => new Value(DataType.Address, str);
         public static Value Label(string str) => new Value(DataType.Label, str);
@@ -119,15 +120,24 @@ namespace JoyScript
 
                     switch (vObject)
                     {
-                        case Action<string> actionStr:
+                        case Action action:
+                            vm.Pop(argCount);
+                            action();
+                            return 0;
+
+                        case Action<int> action:
+                            action(vm.Pop(argCount).vInt);
+                            return 0;
+
+                        case Action<string> action:
                             Value v = vm.Pop(argCount);
                             if (v.DataType == DataType.Nil)
                             {
-                                actionStr(null);
+                                action(null);
                             }
                             else
                             {
-                                actionStr(v.ToString());
+                                action(v.ToString());
                             }
                             return 0;
                     }

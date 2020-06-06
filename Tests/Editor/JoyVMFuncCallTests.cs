@@ -31,7 +31,7 @@ namespace JoyScript
             VM vm = CreateAndExecuteVM(new List<Value>()
             {
                 OpCode.PushValueLiteral, "hello world",
-                    OpCode.PushValueLiteral, Value.NativeFunction(str => result = str),
+                    OpCode.PushValueLiteral, Value.NativeFunction((string str) => result = str),
                     OpCode.PushValueLiteral, 1,
                     OpCode.Call,
             });
@@ -47,11 +47,37 @@ namespace JoyScript
             string result = "not null";
             VM vm = CreateAndExecuteVM(new List<Value>()
             {
-                    OpCode.PushValueLiteral, Value.NativeFunction(str => result = str),
+                    OpCode.PushValueLiteral, Value.NativeFunction((string str) => result = str),
                     OpCode.PushValueLiteral, 0,
                     OpCode.Call,
             });
             Assert.AreEqual(null, result);
+        }
+
+        [Test]
+        public static void ActionArgIntTest()
+        {
+            int result = int.MinValue;
+            VM vm = CreateAndExecuteVM(new List<Value>()
+            {
+                    OpCode.PushValueLiteral, Value.NativeFunction((int ival) => result = ival),
+                    OpCode.PushValueLiteral, 0,
+                    OpCode.Call,
+            });
+            Assert.AreEqual(0, result);
+        }
+
+        [Test]
+        public static void ActionTest()
+        {
+            bool called = false;
+            VM vm = CreateAndExecuteVM(new List<Value>()
+            {
+                    OpCode.PushValueLiteral, Value.NativeFunction(() => called = true),
+                    OpCode.PushValueLiteral, 0,
+                    OpCode.Call,
+            });
+            Assert.AreEqual(called, called);
         }
 
         [Test]

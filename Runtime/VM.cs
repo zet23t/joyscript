@@ -199,7 +199,6 @@ namespace JoyScript
                         break;
                     case OpCode.Call:
                         {
-                            // Debug.Log("call");
                             int argCount = executionStack.PopValue().vInt;
                             Value callee = executionStack.PopValue();
                             if (callee.DataType == DataType.AddressRef)
@@ -210,7 +209,6 @@ namespace JoyScript
                             }
                             else
                             {
-                                Debug.Log(callee.DataType);
                                 callee.Call(this, argCount);
                             }
                         }
