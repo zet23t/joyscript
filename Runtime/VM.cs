@@ -49,7 +49,7 @@ namespace JoyScript
             {
                 if (instructions[i].DataType == DataType.AddressRef)
                 {
-                    instructions[i] = addresses[instructions[i].vString];
+                    instructions[i] = Value.AddressRef(instructions[i].vString, addresses[instructions[i].vString]);
                 }
             }
             // for (int i = 0; i < instructions.Count; i += 1)
@@ -196,9 +196,18 @@ namespace JoyScript
                         {
                             // Debug.Log("call");
                             int argCount = executionStack.PopValue().vInt;
-                            int targetIP = executionStack.PopValue().vInt;
-                            executionStack.PushCall(argCount, ip + 1);
-                            ip = targetIP;
+                            Value callee = executionStack.PopValue();
+                            if (callee.DataType == DataType.AddressRef)
+                            {
+                                int targetIP = callee.vInt;
+                                executionStack.PushCall(argCount, ip + 1);
+                                ip = targetIP;
+                            }
+                            else
+                            {
+                                Debug.Log(callee.DataType);
+                                callee.Call(this, argCount);
+                            }
                         }
                         break;
                     case OpCode.Return:

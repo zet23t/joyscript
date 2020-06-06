@@ -25,6 +25,21 @@ namespace JoyScript
         }
 
         [Test]
+        public static void ActionArgStringTest()
+        {
+            string result = null;
+            VM vm = CreateAndExecuteVM(new List<Value>()
+            {
+                OpCode.PushValueLiteral, "hello world",
+                    OpCode.PushValueLiteral, Value.NativeFunction(str => result = str),
+                    OpCode.PushValueLiteral, 1,
+                    OpCode.Call,
+            });
+            Assert.AreEqual(new Value("hello world"), vm.GetTop());
+
+        }
+
+        [Test]
         public static void IfTest()
         {
             VM vm = CreateAndExecuteVM(new List<Value>()

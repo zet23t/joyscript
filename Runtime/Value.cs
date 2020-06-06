@@ -43,10 +43,11 @@ namespace JoyScript
         public static readonly Value True = new Value(true);
         public static readonly Value False = new Value(false);
 
-        public Value(DataType d, string str) : this()
+        public Value(DataType d, string str, int ival = 0) : this()
         {
             DataType = d;
             vString = str;
+            vInt = ival;
         }
 
         public Value(DataType d, short info = 0) : this()
@@ -76,7 +77,8 @@ namespace JoyScript
             vObject = obj;
         }
 
-        public static Value AddressRef(string str) => new Value(DataType.AddressRef, str);
+        public static Value NativeFunction(Action<string> action) => new Value(DataType.NativeFunction, action);
+        public static Value AddressRef(string str, int address = 0) => new Value(DataType.AddressRef, str, address);
         public static Value Address(string str) => new Value(DataType.Address, str);
         public static Value Label(string str) => new Value(DataType.Label, str);
 
