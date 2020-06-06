@@ -35,8 +35,23 @@ namespace JoyScript
                     OpCode.PushValueLiteral, 1,
                     OpCode.Call,
             });
-            Assert.AreEqual(new Value("hello world"), vm.GetTop());
 
+            Assert.AreEqual(0, vm.GetCurrentFrame().Count);
+            Assert.AreEqual(Value.Nil, vm.GetTop());
+            Assert.AreEqual("hello world", result);
+        }
+
+        [Test]
+        public static void ActionArgStringNullTest()
+        {
+            string result = "not null";
+            VM vm = CreateAndExecuteVM(new List<Value>()
+            {
+                    OpCode.PushValueLiteral, Value.NativeFunction(str => result = str),
+                    OpCode.PushValueLiteral, 0,
+                    OpCode.Call,
+            });
+            Assert.AreEqual(null, result);
         }
 
         [Test]

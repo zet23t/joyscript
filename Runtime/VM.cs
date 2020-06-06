@@ -65,6 +65,11 @@ namespace JoyScript
             return executionStack.GetCurrentFrame();
         }
 
+        public Value Pop(int fromBack = 0)
+        {
+            return executionStack.PopValue(fromBack);
+        }
+
         public Value GetTop(int fromBack = 0)
         {
             return executionStack.PeekValue(fromBack);

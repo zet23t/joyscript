@@ -116,19 +116,22 @@ namespace JoyScript
             {
                 case DataType.NativeFunction:
                     Type objType = vObject.GetType();
-                    if (vObject is Action<string> actionStr)
+
+                    switch (vObject)
                     {
-                        Value v = vm.GetTop(argCount);
-                        if (v.DataType == DataType.Nil)
-                        {
-                            actionStr(null);
-                        }
-                        else
-                        {
-                            actionStr(v.ToString());
-                        }
-                        return 0;
+                        case Action<string> actionStr:
+                            Value v = vm.Pop(argCount);
+                            if (v.DataType == DataType.Nil)
+                            {
+                                actionStr(null);
+                            }
+                            else
+                            {
+                                actionStr(v.ToString());
+                            }
+                            return 0;
                     }
+
                     throw new ExecutionError("don't know how to handle call on " + vObject);
                 default:
                     throw new ExecutionError("Cannot call value as function: " + this.ToString());

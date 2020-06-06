@@ -47,6 +47,11 @@ namespace JoyScript
 
         public Value Pop()
         {
+            if (registerValues.Count == 0)
+            {
+                return Value.Nil;
+            }
+
             Value v = registerValues[registerValues.Count - 1];
             registerValues.RemoveAt(registerValues.Count - 1);
             return v;
