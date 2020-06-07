@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace JoyScript
 {
@@ -7,7 +8,9 @@ namespace JoyScript
     {
         protected static VM CreateAndExecuteVM(string code, Action<string> onPrint = null)
         {
-            return CreateAndExecuteVM(new Compiler().Compile(code), onPrint);
+            List<Value> instructions = new Compiler().Compile(code);
+            VM.PrintInstructions(instructions);
+            return CreateAndExecuteVM(instructions, onPrint);
         }
 
         protected static VM CreateAndExecuteVM(List<Value> instructions, Action<string> onPrint = null)

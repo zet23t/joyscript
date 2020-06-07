@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace JoyScript
 {
@@ -11,9 +12,9 @@ namespace JoyScript
             private string code;
             private int pos;
 
-            private int maxCalls = 100000;
+            private int maxCalls = 1000;
 
-            public bool IsDone => pos >= code.Length && maxCalls-- > 0;
+            public bool IsDone => pos >= code.Length || maxCalls-- > 0;
 
             public void Load(string code)
             {
@@ -112,13 +113,32 @@ namespace JoyScript
                     throw SyntaxError("Unexpected block termination, expected: " + string.Join(" | ", terminators));
                 }
 
-                if (reader.GetNextNonWS() == '=')
+                Log(identifier);
+
+                char v = reader.GetNextNonWS();
+                if (v == '=')
                 {
                     reader.Next();
-                    if (TryReadExpression()) { }
+                    if (TryReadExpression())
+                    {
+
+                    }
+                }
+                if (v == '(')
+                {
+                    reader.Next();
+                    if (TryReadExpression(')'))
+                    {
+
+                    }
                 }
             }
             throw new NotImplementedException();
+        }
+
+        private void Log(string identifier)
+        {
+            Debug.Log(identifier);
         }
 
         private bool TryReadExpression(char closing = (char) 0)
@@ -136,6 +156,7 @@ namespace JoyScript
                 }
                 if (reader.GetNextNonWS() == '(')
                 {
+                    reader.Next();
                     if (!TryReadExpression(')'))
                     {
                         return false;
@@ -148,10 +169,11 @@ namespace JoyScript
                     {
                         throw SyntaxError("Unexpected keyword");
                     }
-
+                    continue;
                 }
+                throw SyntaxError("Expected identifier");
             }
-            return false;
+            throw SyntaxError("Unexpected end of expression");
         }
 
         private SyntaxError SyntaxError(string message)

@@ -8,9 +8,9 @@ namespace JoyScript
         [Test]
         public static void TestFunctionCall()
         {
-            // string result = null;
-            // CreateAndExecuteVM(@"print(""hello world"")", (str) => result = str);
-            // Assert.AreEqual("hello world", result);
+            string result = null;
+            CreateAndExecuteVM(@"print(""hello world"")", (str) => result = str);
+            Assert.AreEqual("hello world", result);
         }
     }
 }

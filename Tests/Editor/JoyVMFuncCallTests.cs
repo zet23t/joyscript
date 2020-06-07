@@ -47,7 +47,7 @@ namespace JoyScript
             string result = "not null";
             VM vm = CreateAndExecuteVM(new List<Value>()
             {
-                    OpCode.PushValueLiteral, Value.NativeFunction((string str) => result = str),
+                OpCode.PushValueLiteral, Value.NativeFunction((string str) => result = str),
                     OpCode.PushValueLiteral, 0,
                     OpCode.Call,
             });
@@ -60,7 +60,7 @@ namespace JoyScript
             int result = int.MinValue;
             VM vm = CreateAndExecuteVM(new List<Value>()
             {
-                    OpCode.PushValueLiteral, Value.NativeFunction((int ival) => result = ival),
+                OpCode.PushValueLiteral, Value.NativeFunction((int ival) => result = ival),
                     OpCode.PushValueLiteral, 0,
                     OpCode.Call,
             });
@@ -73,7 +73,7 @@ namespace JoyScript
             bool called = false;
             VM vm = CreateAndExecuteVM(new List<Value>()
             {
-                    OpCode.PushValueLiteral, Value.NativeFunction(() => called = true),
+                OpCode.PushValueLiteral, Value.NativeFunction(() => called = true),
                     OpCode.PushValueLiteral, 0,
                     OpCode.Call,
             });
@@ -89,13 +89,14 @@ namespace JoyScript
             }
             public bool TestTrue() => true;
         }
+
         [Test]
         public static void ObjectMethodCallTest()
         {
             var tc = new TestClass();
             VM vm = CreateAndExecuteVM(new List<Value>()
             {
-                    OpCode.PushValueLiteral, "Call",
+                OpCode.PushValueLiteral, "Call",
                     OpCode.PushValueLiteral, new Value(tc),
                     OpCode.PushValueLiteral, 0,
                     OpCode.CallMethod,
@@ -103,13 +104,14 @@ namespace JoyScript
             Assert.AreEqual(0, vm.GetCurrentFrame().Count);
             Assert.AreEqual(true, tc.Called);
         }
+
         [Test]
         public static void ObjectMethodCallReturnTrueTest()
         {
             var tc = new TestClass();
             VM vm = CreateAndExecuteVM(new List<Value>()
             {
-                    OpCode.PushValueLiteral, "TestTrue",
+                OpCode.PushValueLiteral, "TestTrue",
                     OpCode.PushValueLiteral, new Value(tc),
                     OpCode.PushValueLiteral, 0,
                     OpCode.CallMethod,

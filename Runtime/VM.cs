@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Text;
 using UnityEngine;
 
 namespace JoyScript
@@ -52,12 +53,20 @@ namespace JoyScript
                     instructions[i] = Value.AddressRef(instructions[i].vString, addresses[instructions[i].vString]);
                 }
             }
-            // for (int i = 0; i < instructions.Count; i += 1)
-            // {
-            //     Debug.Log(i + ": " + instructions[i].ToString());
-            // }
+            // PrintInstructions(instructions);
             this.instructions = instructions;
 
+        }
+
+        public static void PrintInstructions(List<Value> instructions)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Program [" + instructions.Count + "]:");
+            for (int i = 0; i < instructions.Count; i += 1)
+            {
+                sb.AppendLine("  " + i + ": " + instructions[i].ToString());
+            }
+            Debug.Log(sb);
         }
 
         public Frame GetCurrentFrame()
