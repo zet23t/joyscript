@@ -21,6 +21,11 @@ namespace JoyScript
         StoreTableKeyLiteral,
         LoadTableKeyLiteral,
         StoreTableKVLiteral,
+        LoadGlobal,
+        LoadGlobalKeyLiteral,
+        StoreGlobal,
+        StoreGlobalKeyLiteral,
+        StoreGlobalKVLiteral,
 
         //
         CreateFunction,

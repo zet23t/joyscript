@@ -285,6 +285,24 @@ namespace JoyScript
                             obj.SetValue(key, val);
                         }
                         break;
+                    case OpCode.LoadGlobal:
+                        {
+                            Value key = executionStack.PopValue();
+                            executionStack.PushValue(globalTable.GetValue(key));
+                        }
+                        break;
+                    case OpCode.LoadGlobalKeyLiteral:
+                        executionStack.PushValue(globalTable.GetValue(GetNext()));
+                        break;
+                    case OpCode.StoreGlobal:
+                        globalTable.SetValue(executionStack.PopValue(), executionStack.PopValue());
+                        break;
+                    case OpCode.StoreGlobalKeyLiteral:
+                        globalTable.SetValue(GetNext(), executionStack.PopValue());
+                        break;
+                    case OpCode.StoreGlobalKVLiteral:
+                        globalTable.SetValue(GetNext(), GetNext());
+                        break;
                 }
             }
         }

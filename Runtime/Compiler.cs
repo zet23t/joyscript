@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace JoyScript
@@ -14,7 +15,14 @@ namespace JoyScript
 
             private int maxCalls = 1000;
 
-            public bool IsDone => pos >= code.Length || maxCalls-- > 0;
+            public bool IsDone => pos >= code.Length || maxCalls-- < 0;
+
+            public int CurrentPosition => pos;
+
+            public string GetSubString(int start, int stop)
+            {
+                return code.Substring(start, stop - start);
+            }
 
             public void Load(string code)
             {
@@ -101,11 +109,13 @@ namespace JoyScript
 
         private string CompileBlock(HashSet<string> terminators)
         {
+            Log("Compile block until => "+string.Join("|", terminators));
             while (!reader.IsDone)
             {
                 string identifier = reader.GetNextToken(ValidIdentifierStartLetters, ValidIdentifierLetters);
                 if (identifier == null && terminators.Count == 0)
                 {
+                    Log("Terminated");
                     return null;
                 }
                 else if (identifier == null)
@@ -113,7 +123,7 @@ namespace JoyScript
                     throw SyntaxError("Unexpected block termination, expected: " + string.Join(" | ", terminators));
                 }
 
-                Log(identifier);
+                Log(" ? "+identifier);
 
                 char v = reader.GetNextNonWS();
                 if (v == '=')
@@ -123,15 +133,22 @@ namespace JoyScript
                     {
 
                     }
+                    continue;
                 }
                 if (v == '(')
                 {
+                    // function call
                     reader.Next();
                     if (TryReadExpression(')'))
                     {
 
                     }
+                    Append(OpCode.LoadGlobalKeyLiteral, identifier);
+                    Append(OpCode.PushValueLiteral, 1);
+                    Append(OpCode.Call);
+                    continue;
                 }
+                throw new SyntaxError("unexpected character: "+v);
             }
             throw new NotImplementedException();
         }
@@ -141,14 +158,28 @@ namespace JoyScript
             Debug.Log(identifier);
         }
 
+        private void Append(params Value[] values)
+        {
+            foreach(Value v in values)
+            {
+                program.Add(v);
+            }
+        }
+
         private bool TryReadExpression(char closing = (char) 0)
         {
             bool isValid = false;
             while (!reader.IsDone)
             {
+                Log("=> "+reader.GetNextNonWS());
                 if (closing == reader.GetNextNonWS())
                 {
                     return isValid;
+                }
+                if (reader.GetNextNonWS() == '"')
+                {
+                    Append(OpCode.PushValueLiteral, ReadStringLiteral());
+                    continue;
                 }
                 if (reader.GetNextNonWS() == ')')
                 {
@@ -174,6 +205,44 @@ namespace JoyScript
                 throw SyntaxError("Expected identifier");
             }
             throw SyntaxError("Unexpected end of expression");
+        }
+
+        private string ReadStringLiteral()
+        {
+            StringBuilder sb = new StringBuilder();
+            while (!reader.IsDone && ((reader.Next()) != '"'))
+            {
+                char chr = reader.Peek();
+                if (chr == '\\')
+                {
+                    switch (reader.Next())
+                    {
+                        case '"': 
+                            sb.Append('"');
+                            break;
+                        case 'n':
+                            sb.Append('\n');
+                            break;
+                        case 'r':
+                            sb.Append('\r');
+                            break;
+                        case 'b':
+                            sb.Append('\b');
+                            break;
+                        default:
+                            sb.Append('\\');
+                            break;
+                    }
+                    continue;
+                }
+                sb.Append(chr);
+            }
+            if (reader.Peek() != '"')
+            {
+                throw SyntaxError("Unterminated string sequence");
+            }
+            reader.Next();
+            return sb.ToString();
         }
 
         private SyntaxError SyntaxError(string message)
