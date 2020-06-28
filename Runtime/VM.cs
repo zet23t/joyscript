@@ -92,7 +92,7 @@ namespace JoyScript
             }
             catch (ExecutionError e)
             {
-                throw new ExecutionError("Error @" + ip + ": " + e.Message);
+                throw new ExecutionError("Error @" + ip + ": " + e.Message+" "+e.StackTrace);
             }
             catch (ValueAccessError e)
             {

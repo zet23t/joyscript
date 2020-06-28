@@ -129,7 +129,7 @@ namespace JoyScript
                 if (v == '=')
                 {
                     reader.Next();
-                    if (TryReadExpression())
+                    if (TryReadExpression('\0', out _))
                     {
 
                     }
@@ -139,12 +139,12 @@ namespace JoyScript
                 {
                     // function call
                     reader.Next();
-                    if (TryReadExpression(')'))
+                    if (TryReadExpression(')', out int argCount))
                     {
 
                     }
                     Append(OpCode.LoadGlobalKeyLiteral, identifier);
-                    Append(OpCode.PushValueLiteral, 1);
+                    Append(OpCode.PushValueLiteral, argCount);
                     Append(OpCode.Call);
                     continue;
                 }
@@ -166,9 +166,10 @@ namespace JoyScript
             }
         }
 
-        private bool TryReadExpression(char closing = (char) 0)
+        private bool TryReadExpression(char closing, out int argCount)
         {
-            bool isValid = false;
+            bool isValid = true;
+            argCount = 0;
             while (!reader.IsDone)
             {
                 Log("=> "+reader.GetNextNonWS());
@@ -176,6 +177,12 @@ namespace JoyScript
                 {
                     return isValid;
                 }
+                if (reader.GetNextNonWS() == ',')
+                {
+                    reader.Next();
+                    continue;
+                }
+                argCount += 1;
                 if (reader.GetNextNonWS() == '"')
                 {
                     Append(OpCode.PushValueLiteral, ReadStringLiteral());
@@ -188,7 +195,7 @@ namespace JoyScript
                 if (reader.GetNextNonWS() == '(')
                 {
                     reader.Next();
-                    if (!TryReadExpression(')'))
+                    if (!TryReadExpression(')', out _))
                     {
                         return false;
                     }

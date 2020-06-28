@@ -225,6 +225,14 @@ namespace JoyScript
                                 action(v.ToString());
                             }
                             return 0;
+
+                        case Action<string, string> action:
+                            Value b = vm.Pop(argCount - 1);
+                            Value a = vm.Pop(1);
+                            string sa = a.DataType == DataType.Nil ? null : a.ToString();
+                            string sb = b.DataType == DataType.Nil ? null : b.ToString();
+                            action(sa, sb);
+                            return 0;
                     }
 
                     throw new ExecutionError("don't know how to handle call on " + vObject);

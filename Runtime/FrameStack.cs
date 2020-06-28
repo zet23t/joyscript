@@ -39,7 +39,7 @@ namespace JoyScript
             if (stack.Count == 0) throw new ExecutionError("Stack underflow");
             if (amount-- > 1)
             {
-                stack.RemoveRange(stack.Count - amount, amount);
+                stack.Last().RemoveRange(stack.Count - amount, amount);
             }
             return stack.Last().Pop();
         }

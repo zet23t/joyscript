@@ -45,6 +45,11 @@ namespace JoyScript
             registerValues[id] = value;
         }
 
+        public void RemoveRange(int index, int amount)
+        {
+            registerValues.RemoveRange(index, amount);
+        }
+
         public Value Pop()
         {
             if (registerValues.Count == 0)
